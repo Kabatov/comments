@@ -1,26 +1,60 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="app">
+    <CommentsForm @create="createComment"/>
+    <CommentsUsers 
+      :comments="comments"
+      @remove="removeComment"
+    />
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import CommentsForm from './components/CommentsForm.vue'
+import CommentsUsers from './components/CommentsUsers.vue'
 
 export default {
-  name: 'App',
   components: {
-    HelloWorld
+    CommentsForm,
+    CommentsUsers
+  },
+
+  data() {
+    return {
+      comments: [],
+    }
+  },
+
+  methods: {
+    createComment(comment) {
+      this.comments.push(comment);
+    },
+
+    removeComment(comment) {
+      this.comments = this.comments.filter(c => c.id !== comment.id)
+    },
+
+    async getComments() {
+      await fetch('https://jsonplaceholder.typicode.com/comments?_limit=10')
+        .then(response => response.json())
+        .then((response) => this.comments = response)
+    }
+  },
+
+  created() {
+    this.getComments()
   }
 }
+
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app {
+  padding: 20px;
 }
 </style>
